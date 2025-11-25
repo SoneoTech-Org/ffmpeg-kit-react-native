@@ -25,7 +25,7 @@ Pod::Spec.new do |s|
   s.source_files      = '**/FFmpegKitReactNativeModule.m',
   '**/FFmpegKitReactNativeModule.h'
 
-  s.dependency 'soneo-ffmpeg-kit-ios-https', "6.0.2"
+  s.dependency 'luvvi-ffmpeg-kit-ios-https', "6.0.2"
 
 
   s.ios.deployment_target = '12.1'
