@@ -5,7 +5,7 @@ buildscript {
   }
 
   dependencies {
-    classpath 'com.android.tools.build:gradle:8.1.0'
+    classpath 'com.android.tools.build:gradle:8.5.1'
   }
 }
 
@@ -30,11 +30,11 @@ android {
     namespace 'com.arthenica.ffmpegkit.reactnative'
   }
 
-  compileSdkVersion 33
+  compileSdkVersion 35
 
   defaultConfig {
     minSdkVersion safeExtGet('ffmpegKitPackage', 'https').contains("-lts") ? 16 : 24
-    targetSdkVersion 33
+    targetSdkVersion 35
     versionCode 602
     versionName "6.0.2"
   }
@@ -51,14 +51,12 @@ android {
     sourceCompatibility JavaVersion.VERSION_11
     targetCompatibility JavaVersion.VERSION_11
   }
+  ndkVersion (project.findProperty('ffmpegKitNdkVersion') ?: '28.0.12433576')
 }
 
 repositories {
   mavenCentral()
   google()
-  flatDir {
-    dirs 'libs'
-  }
   def found = false
   def defaultDir = null
   def androidSourcesName = 'React Native sources'
@@ -127,6 +125,15 @@ repositories {
 
 dependencies {
   api 'com.facebook.react:react-native:+'
-  implementation files('libs/ffmpeg-kit-classes.jar')
+  implementation 'com.moizhassan.ffmpeg:ffmpeg-kit-16kb:6.1.1'
   implementation 'com.arthenica:smart-exception-java:0.2.1'
+}
+
+configurations.all { config ->
+  config.resolutionStrategy.eachDependency { details ->
+    if (details.requested.group == 'com.arthenica' && details.requested.name.startsWith('ffmpeg-kit')) {
+      details.useTarget('com.moizhassan.ffmpeg:ffmpeg-kit-16kb:6.1.1')
+      details.because('Use 16 KB page-size aligned FFmpegKit build')
+    }
+  }
 }
