@@ -1,414 +1,302 @@
-# FFmpegKit for React Native
+# FFmpegKit for React Native (SoneoTech Fork)
 
-### 1. Features
-- Includes both `FFmpeg` and `FFprobe`
-- Supports
-  - Both `Android` and `iOS`
-  - FFmpeg `v6.0`
-  - `arm-v7a`, `arm-v7a-neon`, `arm64-v8a`, `x86` and `x86_64` architectures on Android
-  - `Android API Level 24` or later
-    - `API Level 16` on LTS releases
-  - `armv7`, `armv7s`, `arm64`, `arm64-simulator`, `i386`, `x86_64`, `x86_64-mac-catalyst` and `arm64-mac-catalyst` architectures on iOS
-  - `iOS SDK 12.1` or later
-    - `iOS SDK 10` on LTS releases
-  - Can process Storage Access Framework (SAF) Uris on Android
-  - 25 external libraries
+## ⚠️ Licensing Notice (Important)
 
-    `dav1d`, `fontconfig`, `freetype`, `fribidi`, `gmp`, `gnutls`, `kvazaar`, `lame`, `libass`, `libiconv`, `libilbc`, `libtheora`, `libvorbis`, `libvpx`, `libwebp`, `libxml2`, `opencore-amr`, `opus`, `shine`, `snappy`, `soxr`, `speex`, `twolame`, `vo-amrwbenc`, `zimg`
+This is a maintained fork of the original ffmpeg-kit-react-native project by arthenica.
 
-  - 4 external libraries with GPL license
+### Key Differences from Upstream
 
-    `vid.stab`, `x264`, `x265`, `xvidcore`
+- This fork uses **LGPL-only FFmpeg builds**
+- **GPL components (x264, x265, xvid, vid.stab, etc.) are NOT included**
+- **No GPL-enabled binaries are distributed**
+- This repository distributes only LGPL-compliant builds of FFmpeg
+- Designed for use in proprietary and commercial applications when used in compliance with LGPL requirements
 
-  - `zlib` and `MediaCodec` Android system libraries
-  - `bzip2`, `iconv`, `libuuid`, `zlib` system libraries and `AudioToolbox`, `VideoToolbox`, `AVFoundation` system frameworks on iOS
+### Android
 
+- Uses a locally built AAR:
+  - `ffmpeg-kit-16kb-6.1.1-lgpl.aar`
+- Built with:
+  - `--disable-gpl`
+  - `--disable-nonfree`
+- Built from source using a reproducible build process
+- The binary is verified to exclude GPL and nonfree components via automated checks
+- Supports modern Android requirements (including 16KB page size)
+
+### iOS
+
+- Uses a prebuilt XCFramework verified to be:
+  - `--disable-gpl`
+  - `--disable-nonfree`
+
+---
+
+## 📜 Compliance
+
+This project uses FFmpeg under the terms of the GNU Lesser General Public License (LGPL).
+
+You must:
+
+- Provide attribution to FFmpeg
+- Provide access to the corresponding FFmpeg source code (including any modifications, if applicable)
+
+Official FFmpeg source:
+https://github.com/FFmpeg/FFmpeg
+
+FFmpeg legal information:
+https://www.ffmpeg.org/legal.html
+
+Redistribution of this software must comply with the terms of the LGPL.
+
+---
+
+## 🚀 Features
+
+- Includes both **FFmpeg** and **FFprobe**
+- Supports:
+  - Android and iOS
+  - FFmpeg v6.0 (based on upstream release)
+  - Android architectures:
+    - arm64-v8a
+    - armeabi-v7a
+    - x86
+    - x86_64
+  - iOS architectures:
+    - arm64
+    - x86_64 (simulator)
+- Supports Android Storage Access Framework (SAF)
 - Includes Typescript definitions
-- Licensed under `LGPL 3.0` by default, some packages licensed by `GPL v3.0` effectively
+- Optimized for **audio processing and media handling**
 
-### 2. Installation
+---
+
+## 📦 Included Libraries
+
+This build includes only **LGPL-compatible libraries**.
+
+Examples:
+
+- dav1d
+- fontconfig
+- freetype
+- fribidi
+- gmp
+- gnutls
+- kvazaar
+- lame
+- libass
+- libiconv
+- libilbc
+- libtheora
+- libvorbis
+- libvpx
+- libwebp
+- libxml2
+- opencore-amr
+- opus
+- shine
+- snappy
+- soxr
+- speex
+- twolame
+- vo-amrwbenc
+- zimg
+
+---
+
+## ❌ Excluded Libraries (GPL)
+
+The following libraries are **explicitly NOT included**:
+
+- x264
+- x265
+- xvidcore
+- vid.stab
+
+---
+
+## 📦 Installation
 
 ```sh
 yarn add ffmpeg-kit-react-native
 ```
 
-#### 2.1 Packages
-
-`FFmpeg` includes built-in encoders for some popular formats. However, there are certain external libraries that needs
-to be enabled in order to encode specific formats/codecs. For example, to encode an `mp3` file you need `lame` or
-`shine` library enabled. You have to install a `ffmpeg-kit-react-native` package that has at least one of them inside.
-To encode an `h264` video, you need to install a package with `x264` inside. To encode `vp8` or `vp9` videos, you need
-a `ffmpeg-kit-react-native` package with `libvpx` inside.
-
-`ffmpeg-kit` provides eight packages that include different sets of external libraries. These packages are named
-according to the external libraries included. Refer to the
-[Packages](https://github.com/arthenica/ffmpeg-kit/wiki/Packages) wiki page to see the names of those
-packages and external libraries included in each one of them.
-
-##### 2.1.1 Package Names
-
-The following table shows all package names and their respective API levels, iOS deployment targets defined in
-`ffmpeg-kit-react-native`.
-
-<table>
-<thead>
-<tr>
-<th align="center">Package</th>
-<th align="center" colspan="3">Main Release</th>
-<th align="center" colspan="3">LTS Release</th>
-</tr>
-<tr>
-<th align="center"></th>
-<th align="center">Name</th>
-<th align="center">Android<br>API Level</th>
-<th align="center">iOS Minimum<br>Deployment Target</th>
-<th align="center">Name</th>
-<th align="center">Android<br>API Level</th>
-<th align="center">iOS Minimum<br>Deployment Target</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td align="center">min</td>
-<td align="center">min</td>
-<td align="center">24</td>
-<td align="center">12.1</td>
-<td align="center">min-lts</td>
-<td align="center">16</td>
-<td align="center">10</td>
-</tr>
-<tr>
-<td align="center">min-gpl</td>
-<td align="center">min-gpl</td>
-<td align="center">24</td>
-<td align="center">12.1</td>
-<td align="center">min-gpl-lts</td>
-<td align="center">16</td>
-<td align="center">10</td>
-</tr>
-<tr>
-<td align="center">https</td>
-<td align="center">(*) https</td>
-<td align="center">24</td>
-<td align="center">12.1</td>
-<td align="center">https-lts</td>
-<td align="center">16</td>
-<td align="center">10</td>
-</tr>
-<tr>
-<td align="center">https-gpl</td>
-<td align="center">https-gpl</td>
-<td align="center">24</td>
-<td align="center">12.1</td>
-<td align="center">https-gpl-lts</td>
-<td align="center">16</td>
-<td align="center">10</td>
-</tr>
-<tr>
-<td align="center">audio</td>
-<td align="center">audio</td>
-<td align="center">24</td>
-<td align="center">12.1</td>
-<td align="center">audio-lts</td>
-<td align="center">16</td>
-<td align="center">10</td>
-</tr>
-<tr>
-<td align="center">video</td>
-<td align="center">video</td>
-<td align="center">24</td>
-<td align="center">12.1</td>
-<td align="center">video-lts</td>
-<td align="center">16</td>
-<td align="center">10</td>
-</tr>
-<tr>
-<td align="center">full</td>
-<td align="center">full</td>
-<td align="center">24</td>
-<td align="center">12.1</td>
-<td align="center">full-lts</td>
-<td align="center">16</td>
-<td align="center">10</td>
-</tr>
-<tr>
-<td align="center">full-gpl</td>
-<td align="center">full-gpl</td>
-<td align="center">24</td>
-<td align="center">12.1</td>
-<td align="center">full-gpl-lts</td>
-<td align="center">16</td>
-<td align="center">10</td>
-</tr>
-</tbody>
-</table>
+---
 
-(*) - Main `https` package is the default package
+## ⚙️ Configuration
 
-#### 2.2 Enabling Packages
+This fork provides a single, fixed configuration:
 
-Installing `ffmpeg-kit-react-native` enables the `https` package by default. It is possible to enable other
-packages using the instructions below.
+- LGPL-only FFmpeg build
+- No optional package switching
+- No GPL variants
 
-##### 2.2.1 Enabling a Package on Android
+This ensures:
 
-- Edit `android/build.gradle` file and add the package name in `ext.ffmpegKitPackage` variable.
+- predictable builds
+- legal safety
+- consistent behavior across platforms
 
-    ```gradle
-    ext {
-        ffmpegKitPackage = "<package name>"
-    }
+---
 
-    ```
+## 📖 Usage
 
-##### 2.2.2 Enabling a Package on iOS
+### 1. Execute FFmpeg commands
 
-- Edit `ios/Podfile` file and add the package name as `subspec`. After that run `pod install` again.
+```ts
+import { FFmpegKit, ReturnCode } from 'ffmpeg-kit-react-native';
 
-    ```ruby
-    pod 'ffmpeg-kit-react-native', :subspecs => ['<package name>'], :podspec => '../node_modules/ffmpeg-kit-react-native/ffmpeg-kit-react-native.podspec'
-    ```
+FFmpegKit.execute('-i file1.mp4 -c:v mpeg4 file2.mp4').then(async (session) => {
+  const returnCode = await session.getReturnCode();
 
-- Note that if you have `use_native_modules!` in your `Podfile`, specifying a `subspec` may cause the following error.
-  You can fix it by defining `ffmpeg-kit-react-native` dependency before `use_native_modules!` in your `Podfile`.
+  if (ReturnCode.isSuccess(returnCode)) {
+    // SUCCESS
+  } else if (ReturnCode.isCancel(returnCode)) {
+    // CANCEL
+  } else {
+    // ERROR
+  }
+});
+```
 
-  ```
-  [!] There are multiple dependencies with different sources for `ffmpeg-kit-react-native` in `Podfile`:
+### 2. Access session details
 
-  - ffmpeg-kit-react-native (from `../node_modules/ffmpeg-kit-react-native`)
-  - ffmpeg-kit-react-native/video (from `../node_modules/ffmpeg-kit-react-native/ffmpeg-kit-react-native.podspec`)
-  ```
+```ts
+FFmpegKit.execute('-i file1.mp4 -c:v mpeg4 file2.mp4').then(async (session) => {
+  const sessionId = session.getSessionId();
+  const command = session.getCommand();
+  const commandArguments = session.getArguments();
 
-#### 2.3 Enabling LTS Releases
+  const state = await session.getState();
+  const returnCode = await session.getReturnCode();
 
-In order to install the `LTS` variant, install the `https-lts` package using instructions in `2.2` or append `-lts` to
-the package name you are using.
+  const startTime = session.getStartTime();
+  const endTime = await session.getEndTime();
+  const duration = await session.getDuration();
 
-#### 2.4 LTS Releases
+  const output = await session.getOutput();
+  const failStackTrace = await session.getFailStackTrace();
+  const logs = await session.getLogs();
+  const statistics = await session.getStatistics();
+});
+```
 
-`ffmpeg-kit-react-native` is published in two variants: `Main Release` and `LTS Release`. Both releases share the
-same source code but is built with different settings (Architectures, API Level, iOS Min SDK, etc.). Refer to the
-[LTS Releases](https://github.com/arthenica/ffmpeg-kit/wiki/LTS-Releases) wiki page to see how they differ from each
-other.
+### 3. Execute asynchronously
 
-### 3. Using
+```ts
+FFmpegKit.executeAsync(
+  '-i file1.mp4 -c:v mpeg4 file2.mp4',
+  (session) => {},
+  (log) => {},
+  (statistics) => {}
+);
+```
 
-1. Execute FFmpeg commands.
+### 4. Execute FFprobe
 
-    ```js
-    import { FFmpegKit } from 'ffmpeg-kit-react-native';
+```ts
+import { FFprobeKit } from 'ffmpeg-kit-react-native';
 
-    FFmpegKit.execute('-i file1.mp4 -c:v mpeg4 file2.mp4').then(async (session) => {
-      const returnCode = await session.getReturnCode();
+FFprobeKit.execute('-i file.mp4').then(async (session) => {
+  // handle output
+});
+```
 
-      if (ReturnCode.isSuccess(returnCode)) {
+### 5. Get media information
 
-        // SUCCESS
+```ts
+FFprobeKit.getMediaInformation(fileUrl).then(async (session) => {
+  const information = await session.getMediaInformation();
+});
+```
 
-      } else if (ReturnCode.isCancel(returnCode)) {
+### 6. Cancel operations
 
-        // CANCEL
+```ts
+FFmpegKit.cancel(); // all sessions
+FFmpegKit.cancel(sessionId); // specific session
+```
 
-      } else {
+### 7. Android SAF support
 
-        // ERROR
+```ts
+import { FFmpegKit, FFmpegKitConfig } from 'ffmpeg-kit-react-native';
 
-      }
-    });
-    ```
+FFmpegKitConfig.selectDocumentForRead('*/*').then((uri) => {
+  FFmpegKitConfig.getSafParameterForRead(uri).then((safUrl) => {
+    FFmpegKit.executeAsync(`-i ${safUrl} output.mp4`);
+  });
+});
+```
 
-2. Each `execute` call creates a new session. Access every detail about your execution from the
-   session created.
+### 8. Session history
 
-    ```js
-    FFmpegKit.execute('-i file1.mp4 -c:v mpeg4 file2.mp4').then(async (session) => {
+```ts
+FFmpegKit.listSessions().then((sessionList) => {
+  sessionList.forEach(async (session) => {
+    const id = session.getSessionId();
+  });
+});
+```
 
-      // Unique session id created for this execution
-      const sessionId = session.getSessionId();
+### 9. Global callbacks
 
-      // Command arguments as a single string
-      const command = session.getCommand();
+```ts
+import { FFmpegKitConfig } from 'ffmpeg-kit-react-native';
 
-      // Command arguments
-      const commandArguments = session.getArguments();
+FFmpegKitConfig.enableLogCallback((log) => {
+  console.log(log.getMessage());
+});
 
-      // State of the execution. Shows whether it is still running or completed
-      const state = await session.getState();
+FFmpegKitConfig.enableStatisticsCallback((statistics) => {
+  console.log(statistics.getSize());
+});
+```
 
-      // Return code for completed sessions. Will be undefined if session is still running or FFmpegKit fails to run it
-      const returnCode = await session.getReturnCode()
+### 10. Fonts
 
-      const startTime = session.getStartTime();
-      const endTime = await session.getEndTime();
-      const duration = await session.getDuration();
+```ts
+import { FFmpegKitConfig } from 'ffmpeg-kit-react-native';
 
-      // Console output generated for this execution
-      const output = await session.getOutput();
+FFmpegKitConfig.setFontDirectoryList(['/system/fonts', '/System/Library/Fonts']);
+```
 
-      // The stack trace if FFmpegKit fails to run a command
-      const failStackTrace = await session.getFailStackTrace()
+---
 
-      // The list of logs generated for this execution
-      const logs = await session.getLogs();
+## 🧪 Test Application
 
-      // The list of statistics generated for this execution (only available on FFmpegSession)
-      const statistics = await session.getStatistics();
+See upstream example usage:
 
-    });
-    ```
+https://github.com/arthenica/ffmpeg-kit-test
 
-3. Execute `FFmpeg` commands by providing session specific `execute`/`log`/`session` callbacks.
+---
 
-    ```js
-    FFmpegKit.executeAsync('-i file1.mp4 -c:v mpeg4 file2.mp4', session => {
+## ⚠️ Notes
 
-      // CALLED WHEN SESSION IS EXECUTED
+- This fork is intended for use in commercial applications under LGPL-compliant conditions
+- No GPL components are included
+- If you require GPL codecs (e.g. x264), you must build your own version
 
-    }, log => {
+---
 
-      // CALLED WHEN SESSION PRINTS LOGS
+## Disclaimer
 
-    }, statistics => {
+This project is not affiliated with or endorsed by the FFmpeg project.
 
-      // CALLED WHEN SESSION GENERATES STATISTICS
+This repository provides a custom build configuration of FFmpeg for React Native usage.
 
-    });
-    ```
+Users are responsible for ensuring compliance with all applicable licenses and regulations when using this software.
 
-4. Execute `FFprobe` commands.
+This software is provided "as is", without warranty of any kind, express or implied.
 
-    ```js
-    FFprobeKit.execute(ffprobeCommand).then(async (session) => {
+---
 
-      // CALLED WHEN SESSION IS EXECUTED
+## 📄 License
 
-    });
-    ```
+This project uses FFmpeg licensed under the GNU Lesser General Public License (LGPL).
 
-5. Get media information for a file/url.
+FFmpeg source:
+https://github.com/FFmpeg/FFmpeg
 
-    ```js
-    FFprobeKit.getMediaInformation(testUrl).then(async (session) => {
-      const information = await session.getMediaInformation();
-
-      if (information === undefined) {
-
-        // CHECK THE FOLLOWING ATTRIBUTES ON ERROR
-        const state = FFmpegKitConfig.sessionStateToString(await session.getState());
-        const returnCode = await session.getReturnCode();
-        const failStackTrace = await session.getFailStackTrace();
-        const duration = await session.getDuration();
-        const output = await session.getOutput();
-      }
-    });
-    ```
-
-6. Stop ongoing FFmpeg operations.
-
-  - Stop all sessions
-    ```js
-    FFmpegKit.cancel();
-    ```
-  - Stop a specific session
-    ```js
-    FFmpegKit.cancel(sessionId);
-    ```
-
-7. (Android) Convert Storage Access Framework (SAF) Uris into paths that can be read or written by
-`FFmpegKit` and `FFprobeKit`.
-
-  - Reading a file:
-    ```js
-    FFmpegKitConfig.selectDocumentForRead('*/*').then(uri => {
-        FFmpegKitConfig.getSafParameterForRead(uri).then(safUrl => {
-            FFmpegKit.executeAsync(`-i ${safUrl} -c:v mpeg4 file2.mp4`);
-        });
-    });
-    ```
-
-  - Writing to a file:
-    ```js
-    FFmpegKitConfig.selectDocumentForWrite('video.mp4', 'video/*').then(uri => {
-        FFmpegKitConfig.getSafParameterForWrite(uri).then(safUrl => {
-            FFmpegKit.executeAsync(`-i file1.mp4 -c:v mpeg4 ${safUrl}`);
-        });
-    });
-    ```
-
-8. Get previous `FFmpeg`, `FFprobe` and `MediaInformation` sessions from the session history.
-
-    ```js
-    FFmpegKit.listSessions().then(sessionList => {
-      sessionList.forEach(async session => {
-        const sessionId = session.getSessionId();
-      });
-    });
-
-    FFprobeKit.listFFprobeSessions().then(sessionList => {
-      sessionList.forEach(async session => {
-        const sessionId = session.getSessionId();
-      });
-    });
-
-    FFprobeKit.listMediaInformationSessions().then(sessionList => {
-      sessionList.forEach(async session => {
-        const sessionId = session.getSessionId();
-      });
-    });
-    ```
-
-9. Enable global callbacks.
-  - Session type specific Complete Callbacks, called when an async session has been completed
-
-    ```js
-    FFmpegKitConfig.enableFFmpegSessionCompleteCallback(session => {
-      const sessionId = session.getSessionId();
-    });
-
-    FFmpegKitConfig.enableFFprobeSessionCompleteCallback(session => {
-      const sessionId = session.getSessionId();
-    });
-
-    FFmpegKitConfig.enableMediaInformationSessionCompleteCallback(session => {
-      const sessionId = session.getSessionId();
-    });
-    ```
-
-  - Log Callback, called when a session generates logs
-
-    ```js
-    FFmpegKitConfig.enableLogCallback(log => {
-      const message = log.getMessage();
-    });
-    ```
-
-  - Statistics Callback, called when a session generates statistics
-
-    ```js
-    FFmpegKitConfig.enableStatisticsCallback(statistics => {
-      const size = statistics.getSize();
-    });
-    ```
-
-10. Register system fonts and custom font directories.
-
-    ```js
-    FFmpegKitConfig.setFontDirectoryList(["/system/fonts", "/System/Library/Fonts", "<folder with fonts>"]);
-    ```
-
-### 4. Test Application
-
-You can see how `FFmpegKit` is used inside an application by running `react-native` test applications developed under
-the [FFmpegKit Test](https://github.com/arthenica/ffmpeg-kit-test) project.
-
-### 5. Tips
-
-See [Tips](https://github.com/arthenica/ffmpeg-kit/wiki/Tips) wiki page.
-
-### 6. License
-
-See [License](https://github.com/arthenica/ffmpeg-kit/wiki/License) wiki page.
-
-### 7. Patents
-
-See [Patents](https://github.com/arthenica/ffmpeg-kit/wiki/Patents) wiki page.
+Legal details:
+https://www.ffmpeg.org/legal.html
